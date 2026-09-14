@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Video Grabber — TikTok, YouTube, Instagram, Pinterest, Facebook</title>
+<style>
+  :root{
+    --bg:#101114;
+    --surface:#17181c;
+    --border:#262832;
+    --text:#ececec;
+    --muted:#8b8d98;
+    --accent:#4fd1b5;
+    --accent-hover:#3fbfa3;
+    --danger:#ef6a6a;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    padding:48px 20px 80px;
+  }
+  main{width:100%;max-width:560px;}
+
+  .kicker{color:var(--muted);font-size:13px;letter-spacing:.02em;margin:0 0 6px;}
+  h1{font-size:26px;line-height:1.25;margin:0 0 8px;font-weight:650;}
+  .sub{color:var(--muted);font-size:14.5px;line-height:1.55;margin:0 0 28px;max-width:46ch;}
+
+  .platforms{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px;}
+  .platform-tag{
+    display:flex;align-items:center;gap:6px;
+    border:1px solid var(--border);border-radius:100px;
+    padding:5px 12px;font-size:12.5px;color:var(--muted);
+  }
+  .dot{width:7px;height:7px;border-radius:50%;flex:none;}
+  .dot.tiktok{background:#25f4ee;}
+  .dot.youtube{background:#ff4444;}
+  .dot.instagram{background:#e1306c;}
+  .dot.pinterest{background:#e60023;}
+  .dot.facebook{background:#1877f2;}
+
+  form{display:flex;flex-direction:column;gap:10px;}
+  .input-row{display:flex;gap:8px;}
+  input[type="text"]{
+    flex:1;min-width:0;
+    background:var(--surface);
+    border:1px solid var(--border);
+    color:var(--text);
+    border-radius:10px;
+    padding:14px 14px;
+    font-size:14.5px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    outline:none;
+    transition:border-color .15s ease;
+  }
+  input[type="text"]:focus{border-color:var(--accent);}
+  input[type="text"]::placeholder{color:#5a5c66;}
+
+  button{
+    font-family:inherit;font-size:14.5px;font-weight:600;
+    border:none;border-radius:10px;cursor:pointer;
+    transition:background-color .15s ease, opacity .15s ease;
+  }
+  .btn-primary{
+    background:var(--accent);color:#0a1210;
+    padding:14px 20px;white-space:nowrap;
+  }
+  .btn-primary:hover{background:var(--accent-hover);}
+  .btn-primary:disabled{opacity:.5;cursor:default;}
+
+  .detected{
+    font-size:13px;color:var(--muted);
+    min-height:18px;display:flex;align-items:center;gap:6px;
+  }
+
+  #banner{
+    display:none;
+    border:1px solid #4a3320;background:#241a10;color:#f0c98a;
+    border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.5;
+    margin-bottom:22px;
+  }
+
+  #status{margin-top:18px;font-size:14px;color:var(--muted);min-height:20px;}
+  #status.error{color:var(--danger);}
+
+  #result{
+    margin-top:24px;
+    opacity:0;transform:translateY(6px);
+    transition:opacity .35s ease, transform .35s ease;
+  }
+  #result.show{opacity:1;transform:none;}
+
+  .thumb{width:100%;border-radius:12px;display:block;margin-bottom:14px;background:var(--surface);}
+  .r-title{font-size:16.5px;font-weight:600;line-height:1.4;margin:0 0 4px;}
+  .r-meta{font-size:13px;color:var(--muted);margin:0 0 18px;}
+
+  .formats{border-top:1px solid var(--border);}
+  .fmt-row{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:13px 0;border-bottom:1px solid var(--border);gap:12px;
+  }
+  .fmt-info{display:flex;flex-direction:column;gap:2px;min-width:0;}
+  .fmt-label{font-size:14px;}
+  .fmt-size{font-size:12px;color:var(--muted);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;}
+  .fmt-dl{
+    flex:none;background:transparent;border:1px solid var(--border);
+    color:var(--text);padding:8px 14px;border-radius:8px;font-size:13px;
+    text-decoration:none;
+  }
+  .fmt-dl:hover{border-color:var(--accent);color:var(--accent);}
+
+  footer{margin-top:40px;color:#5a5c66;font-size:12px;line-height:1.6;}
+</style>
+</head>
+<body>
+<main>
+  <p class="kicker">ব্যক্তিগত ব্যবহারের জন্য</p>
+  <h1>লিংক পেস্ট করো, ভিডিও নামাও</h1>
+  <p class="sub">TikTok, YouTube, Instagram, Pinterest বা Facebook এর যেকোনো পাবলিক ভিডিও লিংক দাও — সব কোয়ালিটি খুঁজে দেবে।</p>
+
+  <div class="platforms">
+    <span class="platform-tag"><span class="dot tiktok"></span>TikTok</span>
+    <span class="platform-tag"><span class="dot youtube"></span>YouTube</span>
+    <span class="platform-tag"><span class="dot instagram"></span>Instagram</span>
+    <span class="platform-tag"><span class="dot pinterest"></span>Pinterest</span>
+    <span class="platform-tag"><span class="dot facebook"></span>Facebook</span>
+  </div>
+
+  <div id="banner"></div>
+
+  <form id="form">
+    <div class="input-row">
+      <input type="text" id="url" placeholder="https://... ভিডিও লিংক পেস্ট করো" autocomplete="off" />
+      <button type="submit" class="btn-primary" id="go">ভিডিও আনো</button>
+    </div>
+    <div class="detected" id="detected"></div>
+  </form>
+
+  <div id="status"></div>
+  <div id="result"></div>
+
+  <footer>
+    শুধু public ভিডিওর জন্য কাজ করবে। ডাউনলোড করা কনটেন্ট শুধু ব্যক্তিগত ব্যবহারে রাখো — কপিরাইট মালিকের অনুমতি ছাড়া অন্য কোথাও পাবলিশ করো না।
+  </footer>
+</main>
+
+<script>
+// এই HTML ফাইল backend থেকে আলাদা হোস্ট করলে (যেমন InfinityFree-তে আপলোড করলে),
+// নিচে Render-এ deploy করা backend-এর পুরো URL বসাও, যেমন:
+//   const API_BASE = "https://tomar-app-name.onrender.com";
+// একই সার্ভার backend+frontend একসাথে serve করলে (শুধু Render ব্যবহার করলে) খালি রাখো.
+const API_BASE = "";
+
+const PLATFORMS = [
+  { id: "tiktok",    label: "TikTok",    test: /tiktok\.com/i },
+  { id: "youtube",   label: "YouTube",   test: /(youtube\.com|youtu\.be)/i },
+  { id: "instagram", label: "Instagram", test: /instagram\.com/i },
+  { id: "pinterest", label: "Pinterest", test: /(pinterest\.[a-z.]+|pin\.it)/i },
+  { id: "facebook",  label: "Facebook",  test: /(facebook\.com|fb\.watch)/i },
+];
+
+const els = {
+  form: document.getElementById("form"),
+  url: document.getElementById("url"),
+  go: document.getElementById("go"),
+  detected: document.getElementById("detected"),
+  status: document.getElementById("status"),
+  result: document.getElementById("result"),
+  banner: document.getElementById("banner"),
+};
+
+function detectPlatform(url) {
+  return PLATFORMS.find((p) => p.test.test(url)) || null;
+}
+
+els.url.addEventListener("input", () => {
+  const p = detectPlatform(els.url.value.trim());
+  els.detected.innerHTML = p
+    ? `<span class="dot ${p.id}"></span> ${p.label} লিংক ধরা পড়েছে`
+    : "";
+});
+
+function fmtSize(bytes) {
+  if (!bytes) return "";
+  const mb = bytes / (1024 * 1024);
+  return mb >= 1 ? `${mb.toFixed(1)} MB` : `${Math.round(bytes / 1024)} KB`;
+}
+
+function fmtDuration(sec) {
+  if (!sec) return "";
+  const m = Math.floor(sec / 60);
+  const s = Math.round(sec % 60).toString().padStart(2, "0");
+  return `${m}:${s}`;
+}
+
+function setStatus(text, isError) {
+  els.status.textContent = text || "";
+  els.status.classList.toggle("error", !!isError);
+}
+
+els.form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const url = els.url.value.trim();
+  if (!url) return;
+
+  els.result.classList.remove("show");
+  els.result.innerHTML = "";
+  els.go.disabled = true;
+  setStatus("খোঁজা হচ্ছে...");
+
+  try {
+    const res = await fetch(`${API_BASE}/api/info`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "সমস্যা হয়েছে");
+
+    renderResult(url, data);
+    setStatus("");
+  } catch (err) {
+    setStatus(err.message, true);
+  } finally {
+    els.go.disabled = false;
+  }
+});
+
+function renderResult(sourceUrl, data) {
+  const metaParts = [];
+  if (data.uploader) metaParts.push(data.uploader);
+  if (data.duration) metaParts.push(fmtDuration(data.duration));
+
+  const rows = data.formats
+    .map((f) => {
+      const dlUrl =
+        `${API_BASE}/api/download?url=${encodeURIComponent(sourceUrl)}` +
+        `&format_id=${encodeURIComponent(f.format_id)}` +
+        `&ext=${encodeURIComponent(f.ext)}` +
+        `&title=${encodeURIComponent(data.title)}`;
+      return `
+        <div class="fmt-row">
+          <div class="fmt-info">
+            <span class="fmt-label">${f.label}</span>
+            <span class="fmt-size">${fmtSize(f.filesize) || "সাইজ অজানা"}</span>
+          </div>
+          <a class="fmt-dl" href="${dlUrl}" download>ডাউনলোড</a>
+        </div>`;
+    })
+    .join("");
+
+  els.result.innerHTML = `
+    ${data.thumbnail ? `<img class="thumb" src="${data.thumbnail}" alt="" />` : ""}
+    <p class="r-title">${escapeHtml(data.title)}</p>
+    <p class="r-meta">${escapeHtml(metaParts.join(" · "))}</p>
+    <div class="formats">${rows || "<p class='r-meta'>কোনো ফরম্যাট পাওয়া যায়নি</p>"}</div>
+  `;
+  requestAnimationFrame(() => els.result.classList.add("show"));
+}
+
+function escapeHtml(str) {
+  const div = document.createElement("div");
+  div.textContent = str || "";
+  return div.innerHTML;
+}
+
+// Warn early if yt-dlp isn't installed on the server
+fetch(`${API_BASE}/api/health`)
+  .then((r) => r.json())
+  .then((h) => {
+    if (!h.ok) {
+      els.banner.style.display = "block";
+      els.banner.textContent =
+        "সার্ভারে yt-dlp পাওয়া যাচ্ছে না — README.md এর ইনস্টল ধাপগুলো ফলো করো, তারপর সার্ভার আবার চালু করো।";
+    }
+  })
+  .catch(() => {});
+</script>
+</body>
+</html>
