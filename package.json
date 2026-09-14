@@ -1,0 +1,14 @@
+{
+  "name": "social-dl",
+  "version": "1.0.0",
+  "description": "TikTok, YouTube, Instagram, Pinterest, Facebook video downloader — single-page frontend + small Node.js backend powered by yt-dlp.",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "cors": "^2.8.5"
+  }
+}
